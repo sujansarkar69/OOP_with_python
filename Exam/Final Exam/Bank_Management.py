@@ -104,49 +104,62 @@ class Login:
 
     # user and admin login 
     def Log_in(self, email, password):
-        for index, (user, is_admin) in enumerate(self.users):
+        found_user = None
+        is_admin = False
+
+        for user, admin_flag in self.users:
             if user.email == email and user.password == password:
-                if is_admin:
-                    print(f"{'-' * 10} Admin {'-' * 10}")
-                    print('1. Check Balance.\n2. Check Loan amount.\n3. Off Loan feature')
-                    user_input = int(input('Press your option: '))
-                    if user_input == 1:
-                        self.bank_balance() # admin check bank balance
-                    elif user_input == 2:
-                        self.check_total_loan() # admin check total loan
-                    elif user_input == 3:
-                        wanna_off = input('Press Y for off and N for don\'t off: ')
-                        if wanna_off == 'Y':
-                            self.loan = False # disable loan feature 
-                            print('Loan feature off Successfully!')
-                        elif wanna_off == 'N':
-                            self.loan = True
+                found_user = user
+                is_admin = admin_flag
+                break
+
+        if found_user is not None:
+            if is_admin:
+                print(f"{'-' * 10} Admin {'-' * 10}")
+                print('1. Check Balance.\n2. Check Loan amount.\n3. Turn off Loan feature')
+
+                user_input = int(input('Press your option: '))
+                if user_input == 1:
+                    self.bank_balance()  # Admin checks bank balance
+                elif user_input == 2:
+                    self.check_total_loan()  # Admin checks total loan
+                elif user_input == 3:
+                    wanna_off = input('Press Y to turn off and N to keep on: ')
+                    if wanna_off.upper() == 'Y':
+                        self.loan = False  # Disable loan feature
+                        print('Loan feature turned off successfully!')
+                    elif wanna_off.upper() == 'N':
+                        self.loan = True
                     else:
-                        print("Invalid Option.")
+                        print("Invalid option.")
                 else:
-                    account = index + 1
-                    print('1. Check Balance.\n2. Deposite Amount.\n3. Withdraw Amount.\n4. Transfer Amount.\n5. Check Transaction history.\n6. Take a loan.')
-                    user_input = int(input('Press your option: '))
-                    if user_input == 1:
-                        self.check_balance(account)
-                    elif user_input == 2:
-                        amount = float(input('Deposite Amount: '))
-                        self.deposite_amount(account, amount)
-                    elif user_input == 3:
-                        amount = float(input('Withdraw Amount: '))
-                        self.withdraw(account, amount)
-                    elif user_input == 4:
-                        transfer_account = int(input('transfer account number: '))
-                        amount = int(input('Transfer amount: '))
-                        self.transfer(account, transfer_account, amount)
-                    elif user_input == 5:
-                        self.transaction_history(account)
-                    elif user_input == 6:
-                        self.take_loan(account)
-                    else:
-                        print('Invalid Option.')
-                return
-        print('Invalid email or password! try again.')
+                    print("Invalid option.")
+            else:
+                account = self.users.index((found_user, is_admin)) + 1
+                print('1. Check Balance.\n2. Deposit Amount.\n3. Withdraw Amount.\n4. Transfer Amount.\n5. Check Transaction history.\n6. Take a loan.')
+
+                user_input = int(input('Press your option: '))
+                if user_input == 1:
+                    self.check_balance(account)
+                elif user_input == 2:
+                    amount = float(input('Deposit Amount: '))
+                    self.deposite_amount(account, amount)
+                elif user_input == 3:
+                    amount = float(input('Withdraw Amount: '))
+                    self.withdraw(account, amount)
+                elif user_input == 4:
+                    transfer_account = int(input('Transfer account number: '))
+                    amount = int(input('Transfer amount: '))
+                    self.transfer(account, transfer_account, amount)
+                elif user_input == 5:
+                    self.transaction_history(account)
+                elif user_input == 6:
+                    self.take_loan(account)
+                else:
+                    print('Invalid option.')
+        else:
+            print('Invalid email or password! Please try again.')
+
 
 login = Login()
 
